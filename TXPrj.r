@@ -72,7 +72,7 @@ pop.pyramidAll(pop.pred, year = list(c(2100, 2015), c(2050, 2015)), age = 1:23, 
 data <- read.table(file.path(find.package("bayesPop"), "ex-data", "popestimates_WAKing.txt"), header = TRUE, row.names = 1)
 head(data)
 
-#procedure from 2023 research for subnational projection
+##procedure from 2023 research for subnational projection
 #View the county tfr data
 my.subtfr.file<-file.path(find.package("bayesTFR"),'extdata','TXcounty_tfr_annual.txt')
 subtfr<-read.delim(my.subtfr.file, check.names=FALSE)
@@ -82,7 +82,7 @@ head(subtfr)
 nat.dir<-file.path(find.package("bayesTFR"),"ex-data", "bayesTFR.output")
 
 #Subnational projections for United States
-subnat.dir<-tempfile()
+subnat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "TFRprojections")
 preds<-tfr.predict.subnat(840, my.tfr.file=my.subtfr.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2022, annual=TRUE)
 names(preds)
 get.countries.table(preds[["840"]])
@@ -90,12 +90,59 @@ summary(preds[["840"]], 'Texas')
 
 #plot subnational and national TFR
 nat.pred<-get.tfr.prediction(nat.dir)
-tfr.trajectories.plot(preds[["840"]],029, pi=95, half.child.variant=FALSE)
-tfr.trajectories.plot(nat.pred,840, pi=95, half.child.variant=FALSE, add=TRUE)
+
+tfr.trajectories.plot(preds[["840"]],453, pi=95, half.child.variant=FALSE)
+tfr.trajectories.plot(nat.pred,840, pi=95, half.child.variant=FALSE,add=TRUE)
 
 #retrieve trajectories
-trajs.bexar<-get.tfr.trajectories(preds[["840"]],029)
-summary(t(trajs.bexar))
+trajs.travis<-get.tfr.trajectories(preds[["840"]],453)
+summary(t(trajs.travis))
 
 #cleanup
 unlink(subnat.dir)
+
+
+#View the county life expectancy data
+my.sube0.file<-file.path(find.package("bayesLife"), 'extdata','countye0_annual.txt')
+sube0<-read.delim(my.sube0.file, check.names=FALSE)
+head(sube0)
+
+#Directory with national projections
+nat.dir<-file.path(find.package("bayesLife"),"ex-data", "bayesLife.output")
+
+#Subnational projections for United States
+#including the joint female-male gap model
+subnat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "e0_projections")
+preds<-e0.predict.subnat(840, my.e0.file=my.sube0.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2022, annual=TRUE)
+names(preds)
+get.countries.table(preds[["840"]])
+summary(preds[["840"]], 'Texas')
+e0.trajectories.plot(preds[["840"]], 'Bexar County')
+
+#plot subnational and national e0 in oneplot
+nat.pred<-get.e0.prediction(nat.dir)
+e0.trajectories.plot(preds[["840"]],29, pi=95, show.legend=TRUE)
+e0.trajectories.plot(nat.pred,840, pi=95, add=TRUE, col=rep("darkgreen",5), nr.traj=0, show.legend=TRUE, lty=1, bty='n')
+
+#add male projection to USA
+#using (wrongly) female data only for demonstration
+predUSA<-e0.jmale.predict.subnat(preds[["840"]], my.e0.file=my.sube0.file)
+
+#retrieve male prediction object
+predUSAMale<-get.rege0.prediction(subnat.dir,840, joint.male=TRUE)
+
+#the smae works using
+predUSAMale<-get.e0.jmale.prediction(predUSA)
+head(predUSAMale)
+
+#Retrieve female and male trajectories
+trajsF.Bexar<-get.e0.trajectories(predUSA, "Bexar County")
+summary(trajsF.Bexar)
+trajsM.Bexar<-get.e0.trajectories(predUSAMale, "Bexar County")
+summary(trajsM.Bexar)
+#summary of differences
+summary(t(trajsF.Bexar-trajsM.Bexar))
+
+#cleanup
+unlink(subnat.dir)
+
