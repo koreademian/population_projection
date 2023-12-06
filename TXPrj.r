@@ -133,15 +133,23 @@ predUSAMale<-get.rege0.prediction(subnat.dir,840, joint.male=TRUE)
 
 #the smae works using
 predUSAMale<-get.e0.jmale.prediction(predUSA)
-head(predUSAMale)
+summary(predUSAMale)
 
 #Retrieve female and male trajectories
 trajsF.Bexar<-get.e0.trajectories(predUSA, "Bexar County")
 summary(trajsF.Bexar)
+trajsF.Bexar.table<-e0.trajectories.table(predUSA, "Bexar County")
+
 trajsM.Bexar<-get.e0.trajectories(predUSAMale, "Bexar County")
 summary(trajsM.Bexar)
+trajsM.Bexar.table<-e0.trajectories.table(predUSAMale, "Bexar County")
+
+trajsF.Bexar.table
+trajsM.Bexar.table
+
 #summary of differences
 summary(t(trajsF.Bexar-trajsM.Bexar))
+
 
 #cleanup
 unlink(subnat.dir)
