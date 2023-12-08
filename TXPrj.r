@@ -20,10 +20,8 @@ library(tidyr)
 #demographic library
 library(bayesTFR)
 library(bayesLife)
+library(bayesMig)
 library(bayesPop)
-
-
-
 
 #procedure for before 2019 research
 setwd("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country")
@@ -150,7 +148,28 @@ trajsM.Bexar.table
 #summary of differences
 summary(t(trajsF.Bexar-trajsM.Bexar))
 
-
 #cleanup
 unlink(subnat.dir)
 
+#migration
+#simulation for TX County
+us.mig.file<-file.path(find.package("bayesMig"), "extdata", "TX_county_mig.txt")
+sim.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "mig_projections")
+m<-run.mig.mcmc(nr.chains=3, iter=100, thin=1, my.mig.file=us.mig.file, annual=TRUE, output.dir=sim.dir, present.year=2022, replace.output=TRUE)
+summary(m)
+summary(m, "Bexar County")
+
+mig.partraces.plot(m)
+mig.partraces.cs.plot("Bexar County", m)
+
+#prediction
+pred<-mig.predict(sim.dir=sim.dir, burnin=5, end.year=2100)
+
+mig.trajectories.plot(pred, "Bexar County", pi=80, ylim=c(-0.02,0.02))
+mig.trajectories.plot(pred, "Bexar County")
+summary(pred,"Bexar County")
+
+#View locations included in the simulation
+get.countries.table(pred)
+
+unlink(sim.dir, recursive=TRUE)
