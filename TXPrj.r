@@ -173,3 +173,32 @@ summary(pred,"Bexar County")
 get.countries.table(pred)
 
 unlink(sim.dir, recursive=TRUE)
+
+#subnational projections for USA
+#Use subnational probabilistic TFR simulation
+my.subtfr.file<-file.path(find.package("bayesTFR"), 'extdata', 'TXcounty_tfr_annual.txt')
+tfr.nat.dir<-file.path(find.package("bayesTFR"), 'ex-data', 'bayesTFR.output')
+tfr.reg.dir<-tempfile()
+#tfr.reg.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "TFRprojections")
+tfr.preds<-tfr.predict.subnat(840, my.tfr.file=my.subtfr.file, sim.dir=tfr.nat.dir, output.dir=tfr.reg.dir, start.year=2022, annual=TRUE)
+
+#use subnational probabilistic e0
+my.sube0.file<-file.path(find.package("bayesLife"), 'extdata','countye0_annual.txt')
+e0.nat.dir<-file.path(find.package("bayesLife"),"ex-data", "bayesLife.output")
+e0.reg.dir<-tempfile()
+e0.preds<-e0.predict.subnat(840, my.e0.file=my.sube0.file, sim.dir=e0.nat.dir, output.dir=e0.reg.dir, start.year=2022, predict.jmale=TRUE,my.e0M.file=my.sube0.file,annual=TRUE)
+
+#Population projections
+data.dir<-file.path(find.package("bayesPop"), "extdata")
+sim.dir<-tempfile()
+pred<-pop.predict.subnat(output.dir=sim.dir,
+locations=file.path(data.dir,"USAlocations.txt"),
+inputs=list(popM=file.path(data.dir, ""),
+            popF=file.path(data.dir,""),
+            patterns=file.path(data.dir,"USApatterns.txt"),
+            tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), #C:\Users\bkf510\AppData\Local\Temp\Rtmp2FLlIF\file2f44e204fed
+            e0.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"), #C:\Users\bkf510\AppData\Local\Temp\Rtmp2FLlIF\file2f457cf2777
+            e0M.sim.dir="joint_"
+            ),
+        verbose=TRUE)
+)
