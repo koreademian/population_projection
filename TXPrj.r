@@ -24,6 +24,7 @@ library(bayesMig)
 library(bayesPop)
 library(lubridate)
 library(wpp2022)
+library(wpp2019)
 library(data.table)
 
 #procedure for before 2019 research
@@ -181,14 +182,26 @@ unlink(sim.dir, recursive=TRUE)
 data.dir<-file.path(find.package("bayesPop"), "extdata")
 #use national data for tfr and e0
 sim.dir<-tempfile()
-CANlocations<-file.path(data.dir,"CANlocations.txt")
+pred<-pop.predict(countries=840,output.dir=sim.dir, nr.traj=3, 
+                  wpp.year=2022, present.year=2020, annual=TRUE, keep.vital.events=TRUE,
+                  replace.output=TRUE)
+pop.trajectories.plot(pred, 840, sum.ober.ages=TRUE)
+unlink(sim.dir, recursive=TRUE)
+#Use antional data for tfr and e0
+data.dir<-file.path(find.package("bayesPop"), "extdata")
+sim.dir<-tempfile()
 pred<-pop.predict.subnat(output.dir=sim.dir,
-        locations=CANlocations,
-        inputs=list(popM=file.path(data.dir,"CANpopM.txt"),
-                    popF=file.path(data.dir,"CANpopF.txt"),
-                    tfr.file="median_"),
-                    verbose=TRUE)
-pop.trajectories.plot(pred, "Alberta", sum.over.ages=TRUE)
+       locations=file.path(data.dir, "USAlocations.txt"),
+       inputs=list(popM=file.path(data.dir,"USApopM2.txt"),
+                   popF=file.path(data.dir,"USApopF2.txt"),
+                   tfr.file="median_"),
+                   verbose=TRUE, 
+                   replace.output=TRUE)
+
+pop.trajectories.plot(pred, "Bexar County", sum.over.ages=TRUE)
+#NOW try different annual basis age and mortality and different start year and present year
+
+
 #Use subnational probabilistic TFR simulation
 my.subtfr.file<-file.path(find.package("bayesTFR"), 'extdata', 'TXcounty_tfr_annual.txt')
 tfr.nat.dir<-file.path(find.package("bayesTFR"), 'ex-data', 'bayesTFR.output')
@@ -201,32 +214,22 @@ e0.nat.dir<-file.path(find.package("bayesLife"),"ex-data", "bayesLife.output")
 e0.reg.dir<-tempfile()
 e0.preds<-e0.predict.subnat(840, my.e0.file=my.sube0.file, sim.dir=e0.nat.dir, output.dir=e0.reg.dir, start.year=2022, predict.jmale=TRUE,my.e0M.file=my.sube0.file,annual=TRUE)
 e0.trajectories.plot(e0.preds[["840"]],29, pi=95, show.legend=TRUE)
-
-summary(tfr.preds)
+head(tfr.preds)
 summary(e0.preds)
-
 #Population projections
 data.dir<-file.path(find.package("bayesPop"), "extdata")
 sim.dir<-tempfile()
-
-#life table for input
-pred<-pop.predict(countries=840, output.dir=sim.dir, wpp.year=2022, present.year=2020, keep.vital.events=TRUE, fixed.mx=TRUE, fixed.pasfr=TRUE)
-mxm<-pop.byage.table(pred, expression='MUS_M{age.index01(27)}', year=2020)[,2]
-mxf<-pop.byage.table(pred, expression='MUS_F{age.index01(27)}', year=2020)[,1]
-USAlocations <- read.table(file.path(data.dir, "USAlocations.txt"), header = TRUE,sep="\t")
-USApopM <- read.table(file.path(data.dir, "USApopM.txt"), header = TRUE,sep="\t")
-USApopF <- read.table(file.path(data.dir,"USApopF.txt"), header = TRUE,sep="\t")
-USApatterns <- read.table(file.path(data.dir,"CANpatterns.txt"), header = TRUE,sep="\t")
-head(USAlocations)
-pred<-pop.predict.subnat(output.dir=sim.dir,start.year=2010, present.year=2010, end.year=2100, wpp.year=2022, 
-        annual=TRUE, default.country=840, locations=USAlocations, fixed.mx=TRUE,
-        inputs=list(popM=USApopM,popF=USApopF, patterns=USApatterns,
-        tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), 
-        e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"),
-        e0M.sim.dir="joint_"),
+pred<-pop.predict.subnat(output.dir=sim.dir, annual=TRUE,start.year=2010, present.year=2010, end.year=2050,
+    locations=file.path(data.dir,"USAlocations.txt"),
+    inputs=list(popM=file.path(data.dir, "USApopM.txt"),
+            popF=file.path(data.dir,"USApopF.txt"),
+            patterns=file.path(data.dir,"USApatterns.txt"),
+            tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
+            e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
+            e0M.sim.dir="joint_"
+            ),
     verbose=TRUE, replace.output=TRUE)
 
-print(mxm)
 
 
 
@@ -261,3 +264,12 @@ summary(tfr.preds,"Bexar County")
 summary(e0.preds,"Bexar County")
 summary(pred)
 
+#life table for input
+pred<-pop.predict(countries=840, output.dir=sim.dir, wpp.year=2019, present.year=2020, keep.vital.events=TRUE, fixed.mx=TRUE, fixed.pasfr=TRUE)
+mxm<-pop.byage.table(pred, expression='MUS_M{age.index01(27)}', year=2020)[,2]
+mxf<-pop.byage.table(pred, expression='MUS_F{age.index01(27)}', year=2020)[,1]
+USAlocations <- read.table(file.path(data.dir, "USAlocations.txt"), header = TRUE,sep="\t")
+USApopM <- read.table(file.path(data.dir, "USApopM.txt"), header = TRUE,sep="\t")
+USApopF <- read.table(file.path(data.dir,"USApopF.txt"), header = TRUE,sep="\t")
+USApatterns <- read.table(file.path(data.dir,"USApatterns.txt"), header = TRUE,sep="\t")
+head(USApopM)
