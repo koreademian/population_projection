@@ -191,14 +191,14 @@ unlink(sim.dir, recursive=TRUE)
 data.dir<-file.path(find.package("bayesPop"), "extdata")
 sim.dir<-tempfile()
 pred<-pop.predict.subnat(output.dir=sim.dir,
-       locations=file.path(data.dir, "USAlocations.txt"),
-       inputs=list(popM=file.path(data.dir,"USApopM2.txt"),
-                   popF=file.path(data.dir,"USApopF2.txt"),
+       locations=file.path(data.dir, "USAlocations4.txt"),
+       inputs=list(popM=file.path(data.dir,"USApopM6.txt"),
+                   popF=file.path(data.dir,"USApopF6.txt"),
                    tfr.file="median_"),
                    verbose=TRUE, 
                    replace.output=TRUE)
 
-pop.trajectories.plot(pred, "Bexar County", sum.over.ages=TRUE)
+pop.trajectories.plot(pred, 1, sum.over.ages=TRUE)
 #NOW try different annual basis age and mortality and different start year and present year
 
 
@@ -219,10 +219,10 @@ summary(e0.preds)
 #Population projections
 data.dir<-file.path(find.package("bayesPop"), "extdata")
 sim.dir<-tempfile()
-pred<-pop.predict.subnat(output.dir=sim.dir, annual=TRUE,start.year=2010, present.year=2010, end.year=2050,
-    locations=file.path(data.dir,"USAlocations.txt"),
-    inputs=list(popM=file.path(data.dir, "USApopM.txt"),
-            popF=file.path(data.dir,"USApopF.txt"),
+pred<-pop.predict.subnat(output.dir=sim.dir, 
+    locations=file.path(data.dir,"USAlocations4.txt"),
+    inputs=list(popM=file.path(data.dir, "USApopM6.txt"),
+            popF=file.path(data.dir,"USApopF6.txt"),
             patterns=file.path(data.dir,"USApatterns.txt"),
             tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
             e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
@@ -230,8 +230,12 @@ pred<-pop.predict.subnat(output.dir=sim.dir, annual=TRUE,start.year=2010, presen
             ),
     verbose=TRUE, replace.output=TRUE)
 
-
-
+pop.trajectories.plot(pred,1, sum.over.ages=TRUE)
+pop.pyramid(pred,1,year=2050)
+get.countries.table(pred)
+#aggregate to countly level
+aggr<-pop.aggregate.subnat(pred, regions=840, locations=file.path(data.dir,"USAlocations4.txt"))
+pop.trajectories.plot(aggr,840, sum.over.ages=TRUE)
 
 #Use subnational probabilistic TFR simulation
 my.subtfr.file<-file.path(find.package("bayesTFR"), 'extdata', 'subnational_tfr_template.txt')
