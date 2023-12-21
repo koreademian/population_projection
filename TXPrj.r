@@ -4,7 +4,7 @@ new_lib_dir <-"C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Des
 # Set the new library directory as the default
 .libPaths(c(new_lib_dir, .libPaths()))
 
-install.packages("lubridate")
+install.packages("wpp2022")
 library(car)
 library(haven)
 library(dplyr)
@@ -25,7 +25,7 @@ library(bayesPop)
 library(lubridate)
 library(wpp2022)
 library(wpp2019)
-library(data.table)
+library(MortCast)
 
 #procedure for before 2019 research
 setwd("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country")
@@ -216,17 +216,28 @@ e0.preds<-e0.predict.subnat(840, my.e0.file=my.sube0.file, sim.dir=e0.nat.dir, o
 e0.trajectories.plot(e0.preds[["840"]],29, pi=95, show.legend=TRUE)
 head(tfr.preds)
 summary(e0.preds)
+
+#lifetable
+sim.dir<-temfile()
+mac.expression5(country="Canada")
+pred<-pop.predict(country="840",output.dir=sim.dir, wpp.year=2019, present.year=2020, 
+                 keep.vital.events=TRUE,fixed.mx=TRUE, fixed.pasfr=TRUE, replace.output=TRUE)
+#get male mortality rates from 2020 for age groups 0-1,1-4,5-9
+mxm<-pop.byage.table(pred, expression="MUS_M{age.index01(27)}", year=2015)[,1]
+LifeTableMx(mx,sex=c("Male","Female", "Total"), include01=TRUE, abridged=TRUE, radix=1, open.age=130)
 #Population projections
 data.dir<-file.path(find.package("bayesPop"), "extdata")
 sim.dir<-tempfile()
-pred<-pop.predict.subnat(output.dir=sim.dir, 
+mig.sim.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "mig_projections")
+pred<-pop.predict.subnat(output.dir=sim.dir, default.country=840,
     locations=file.path(data.dir,"USAlocations4.txt"),
     inputs=list(popM=file.path(data.dir, "USApopM6.txt"),
             popF=file.path(data.dir,"USApopF6.txt"),
             patterns=file.path(data.dir,"USApatterns.txt"),
             tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
             e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
-            e0M.sim.dir="joint_"
+            e0M.sim.dir="joint_",
+            migtrj=file.path(mig.sim.dir, "predictions", "projection_summary.csv") #use total migration by county
             ),
     verbose=TRUE, replace.output=TRUE)
 
@@ -237,33 +248,6 @@ get.countries.table(pred)
 aggr<-pop.aggregate.subnat(pred, regions=840, locations=file.path(data.dir,"USAlocations4.txt"))
 pop.trajectories.plot(aggr,840, sum.over.ages=TRUE)
 
-#Use subnational probabilistic TFR simulation
-my.subtfr.file<-file.path(find.package("bayesTFR"), 'extdata', 'subnational_tfr_template.txt')
-tfr.nat.dir<-file.path(find.package("bayesTFR"), 'ex-data', 'bayesTFR.output')
-tfr.reg.dir<-tempfile()
-#tfr.reg.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "TFRprojections")
-tfr.preds<-tfr.predict.subnat(124, my.tfr.file=my.subtfr.file, sim.dir=tfr.nat.dir, output.dir=tfr.reg.dir, start.year=2013)
-
-#use subnational probabilistic e0
-my.sube0.file<-file.path(find.package("bayesLife"), 'extdata','subnational_e0_template.txt')
-e0.nat.dir<-file.path(find.package("bayesLife"),"ex-data", "bayesLife.output")
-e0.reg.dir<-tempfile()
-e0.preds<-e0.predict.subnat(124, my.e0.file=my.sube0.file, sim.dir=e0.nat.dir, output.dir=e0.reg.dir, start.year=2013, predict.jmale=TRUE,my.e0M.file=my.sube0.file)
-summary(tfr.preds)
-summary(e0.preds)
-#Population projections
-data.dir<-file.path(find.package("bayesPop"), "extdata")
-sim.dir<-tempfile()
-pred<-pop.predict.subnat(output.dir=sim.dir, 
-    locations=file.path(data.dir,"CANlocations.txt"),
-    inputs=list(popM=file.path(data.dir, "CANpopM.txt"),
-            popF=file.path(data.dir,"CANpopF.txt"),
-            patterns=file.path(data.dir,"CANpatterns.txt"),
-            tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c124"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
-            e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c124"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
-            e0M.sim.dir="joint_"
-            ),
-    verbose=TRUE)
 summary(tfr.preds,"Bexar County")
 summary(e0.preds,"Bexar County")
 summary(pred)
@@ -277,3 +261,5 @@ USApopM <- read.table(file.path(data.dir, "USApopM.txt"), header = TRUE,sep="\t"
 USApopF <- read.table(file.path(data.dir,"USApopF.txt"), header = TRUE,sep="\t")
 USApatterns <- read.table(file.path(data.dir,"USApatterns.txt"), header = TRUE,sep="\t")
 head(USApopM)
+data(vwBaseYear2022)
+head(vwBaseYear2022)
