@@ -217,33 +217,50 @@ e0.trajectories.plot(e0.preds[["840"]],29, pi=95, show.legend=TRUE)
 head(tfr.preds)
 summary(e0.preds)
 
-#lifetable
-sim.dir<-temfile()
-mac.expression5(country="Canada")
-pred<-pop.predict(country="840",output.dir=sim.dir, wpp.year=2019, present.year=2020, 
-                 keep.vital.events=TRUE,fixed.mx=TRUE, fixed.pasfr=TRUE, replace.output=TRUE)
-#get male mortality rates from 2020 for age groups 0-1,1-4,5-9
-mxm<-pop.byage.table(pred, expression="MUS_M{age.index01(27)}", year=2015)[,1]
-LifeTableMx(mx,sex=c("Male","Female", "Total"), include01=TRUE, abridged=TRUE, radix=1, open.age=130)
-#Population projections
+#Population projections 5*5
 data.dir<-file.path(find.package("bayesPop"), "extdata")
 sim.dir<-tempfile()
 mig.sim.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "mig_projections")
 pred<-pop.predict.subnat(output.dir=sim.dir, default.country=840,
-    locations=file.path(data.dir,"USAlocations4.txt"),
-    inputs=list(popM=file.path(data.dir, "USApopM6.txt"),
-            popF=file.path(data.dir,"USApopF6.txt"),
+    locations=file.path(data.dir,"USAlocations.txt"),
+    inputs=list(popM=file.path(data.dir, "USApopM.txt"),
+            popF=file.path(data.dir,"USApopF.txt"),
             patterns=file.path(data.dir,"USApatterns.txt"),
             tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
             e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
             e0M.sim.dir="joint_",
-            migtrj=file.path(mig.sim.dir, "predictions", "projection_summary.csv") #use total migration by county
+            migtrj=file.path(mig.sim.dir, "predictions", "projection_summary.csv"), #use total migration by county
+            GQpopM=file.path(data.dir, "USApopGQM.txt"), #use GQcounts by county for males
+            GQpopF=file.path(data.dir, "USApopGQF.txt") #use GQcounts by county for females
             ),
     verbose=TRUE, replace.output=TRUE)
 
 pop.trajectories.plot(pred,1, sum.over.ages=TRUE)
 pop.pyramid(pred,1,year=2050)
 get.countries.table(pred)
+
+#Population projections 1*1
+data.dir<-file.path(find.package("bayesPop"), "extdata")
+sim.dir<-tempfile()
+mig.sim.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "mig_projections")
+pred<-pop.predict.subnat(output.dir=sim.dir, default.country=840,
+    locations=file.path(data.dir,"USAlocations.txt"),
+    inputs=list(popM=file.path(data.dir, "USApopM.txt"),
+            popF=file.path(data.dir,"USApopF.txt"),
+            patterns=file.path(data.dir,"USApatterns.txt"),
+            tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
+            e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
+            e0M.sim.dir="joint_",
+            migtrj=file.path(mig.sim.dir, "predictions", "projection_summary.csv"), #use total migration by county
+            GQpopM=file.path(data.dir, "USApopGQM.txt"), #use GQcounts by county for males
+            GQpopF=file.path(data.dir, "USApopGQF.txt") #use GQcounts by county for females
+            ),
+    verbose=TRUE, replace.output=TRUE)
+
+pop.trajectories.plot(pred,1, sum.over.ages=TRUE)
+pop.pyramid(pred,1,year=2050)
+get.countries.table(pred)
+
 #aggregate to countly level
 aggr<-pop.aggregate.subnat(pred, regions=840, locations=file.path(data.dir,"USAlocations4.txt"))
 pop.trajectories.plot(aggr,840, sum.over.ages=TRUE)
