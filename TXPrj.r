@@ -24,259 +24,259 @@ library(bayesMig)
 library(bayesPop)
 library(lubridate)
 library(wpp2022)
-library(wpp2019)
-library(MortCast)
+#library(wpp2019)
+#library(MortCast)
+
+#from UW github
+#library(devtools)
+#options(timeout = 600)
+#install_github("PPgp/wpp2022", force=TRUE)
 
 #procedure for before 2019 research
-setwd("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country")
+setwd("Y:/Projections/Research/Bayesian_Model/simulation")
 getwd()
-#TFR
-sim.dir.tfr <- file.path(getwd(), "TFRprojections")
-run.tfr.mcmc(iter = 1000, nr.chains = 1, thin = 1, output.dir = sim.dir.tfr, seed = 1)
-#run.tfr3.mcmc(sim.dir = sim.dir.tfr, iter = 1000, nr.chains = 1, thin = 1, seed = 1)
-tfr.predict(sim.dir = sim.dir.tfr, nr.traj = 100, burnin = 500, burnin3 = 500, seed = 1)
+
+#Overall Flow
+#TFR run by mcmc for simulating the total fertility rates of all countries of world (phaseII)
+#sim.dir.tfr <- file.path(getwd(), "TFRprojections")
+#run.tfr.mcmc(iter = 50000, nr.chains = 5, thin = 10, output.dir = sim.dir.tfr, seed = 1)
+#run.tfr3.mcmc(sim.dir = sim.dir.tfr, iter = 50000, nr.chains = 5, thin = 10, seed = 1, replace.output=TRUE)
+#tfr.predict(sim.dir = sim.dir.tfr, nr.traj = NULL, burnin = 1000, burnin3 = 1000, seed = 1)
 #life expectancy
-sim.dir.e0 <- file.path(getwd(), "e0_projections")
-run.e0.mcmc(sex = "Female", iter = 1000, nr.chains = 1, thin = 1,  output.dir = sim.dir.e0, seed = 1)
+#storing e0_prediction trajectories of each nation
+#sim.dir.e0 <- file.path(getwd(), "e0_projections")
+#run.e0.mcmc(sex = "Female", iter = 50000, nr.chains = 5, thin = 10,  output.dir = sim.dir.e0, seed = 1)
+#e0.predict(sim.dir=sim.dir.e0, nr.traj = NULL, burnin = 1000, seed = 1)
 #migration
-sim.dir.mig <- file.path(getwd(), "mig_projections")
-run.mig.mcmc(nr.chains = 4, iter = 10000, thin = 10, output.dir = sim.dir.mig)
+#storing mig_prediction trajectories of each nation
+#sim.dir.mig <- file.path(getwd(), "mig_projections")
+#run.mig.mcmc(nr.chains = 5, iter = 50000, thin = 10, output.dir = sim.dir.mig)
+#mig.predict(sim.dir=sim.dir.mig, nr.traj = NULL, burnin = 1000, seed = 1)
 
 # Generate probabilistic population projections
-sim.dir.pop <- file.path(getwd(), "pop_projections")
-pop.pred <- pop.predict(output.dir = sim.dir.pop, inputs = list(tfr.sim.dir = sim.dir.tfr, e0F.sim.dir = sim.dir.e0, e0M.sim.dir = "joint_"), keep.vital.events = TRUE, verbose = TRUE)
-pop.pred <- get.pop.prediction(sim.dir.pop)
+#sim.dir.pop <- file.path(getwd(), "pop_projections")
+#pop.pred <- pop.predict(output.dir = sim.dir.pop, inputs = list(tfr.sim.dir = sim.dir.tfr, e0F.sim.dir = sim.dir.e0, e0M.sim.dir = "joint_"), keep.vital.events = TRUE, verbose = TRUE)
+#pop.pred <- get.pop.prediction(sim.dir.pop)
 
 # Get the locations where R packages are installed
-package_locations <- .libPaths()
-print(package_locations)
+#package_locations <- .libPaths()
+#print(package_locations)
 
-#population prediction example
-pop.pred <- get.pop.prediction(sim.dir.pop)
-country <- 840
-summary(pop.pred, country)
-#plot trajectories
-pop.trajectories.plot(pop.pred, country = country, sum.over.ages = TRUE)
-pop.trajectories.plot(pop.pred, country = country, sex = "male", age = 1:5, sum.over.ages = TRUE) #age refer this which(pop.pred$ages < 45) or pop.pred$ages[1:3]
-pop.byage.plot(pop.pred, country = country, year = 2100)
-pop.byage.plot(pop.pred, country = country, year = 2060, pi = 80, nr.traj = 50)
-pop.byage.plot(pop.pred, country = country, year = 1960, add = TRUE, col = "blue", show.legend = FALSE)
-pop.cohorts.plot(pop.pred, country = country)
-cohort.data <- cohorts(pop.pred, country = country)
-head(names(cohort.data))
-pop.cohorts.plot(pop.pred, cohort.data = cohort.data, cohorts = c(1980, 2000, 2020))
-#population pyramid
-pop.pyramid(pop.pred, country, year = c(2100, 2015), age = 1:23)
-pop.trajectories.pyramid(pop.pred, country, year = c(2100, 2025, 1950),age = 1:23, pi = 95, nr.traj = 0, proportion = TRUE)
-pop.pyramidAll(pop.pred, year = list(c(2100, 2015), c(2050, 2015)), age = 1:23, output.dir = "mypyramids")
-
-#state specific approach
-data <- read.table(file.path(find.package("bayesPop"), "ex-data", "popestimates_WAKing.txt"), header = TRUE, row.names = 1)
-head(data)
-
+#Subnational TFR with Texas County level
 ##procedure from 2023 research for subnational projection
 #View the county tfr data
-my.subtfr.file<-file.path(find.package("bayesTFR"),'extdata','TXcounty_tfr_annual.txt')
-subtfr<-read.delim(my.subtfr.file, check.names=FALSE)
-head(subtfr)
+#my.subtfr.file<-file.path(find.package("bayesTFR"),'extdata','TXcounty_tfr_annual.txt')
+#subtfr<-read.delim(my.subtfr.file, check.names=FALSE)
+#head(subtfr)
 
 #Directory with national projections
-nat.dir<-file.path(find.package("bayesTFR"),"ex-data", "bayesTFR.output")
+#nat.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation", "TFRprojections")
 
 #Subnational projections for United States
-subnat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "TFRprojections")
-preds<-tfr.predict.subnat(840, my.tfr.file=my.subtfr.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2022, annual=TRUE)
-names(preds)
-get.countries.table(preds[["840"]])
-summary(preds[["840"]], 'Texas')
+#subnat.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/TFRprojections")
+#preds<-tfr.predict.subnat(840, my.tfr.file=my.subtfr.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2022, annual=TRUE)
+#names(preds)
+#get.countries.table(preds[["840"]])
+#summary(preds[["840"]], 'Bexar County')
 
 #plot subnational and national TFR
-nat.pred<-get.tfr.prediction(nat.dir)
+#nat.pred<-get.tfr.prediction(nat.dir)
 
-tfr.trajectories.plot(preds[["840"]],453, pi=95, half.child.variant=FALSE)
-tfr.trajectories.plot(nat.pred,840, pi=95, half.child.variant=FALSE,add=TRUE)
+#tfr.trajectories.plot(preds[["840"]],29, pi=95, half.child.variant=FALSE)
 
 #retrieve trajectories
-trajs.travis<-get.tfr.trajectories(preds[["840"]],453)
-summary(t(trajs.travis))
+#trajs.bexar<-get.tfr.trajectories(preds[["840"]],29)
+#summary(t(trajs.bexar))
 
 #cleanup
-unlink(subnat.dir)
+#unlink(subnat.dir)
 
 
 #View the county life expectancy data
-my.sube0.file<-file.path(find.package("bayesLife"), 'extdata','countye0_annual.txt')
-sube0<-read.delim(my.sube0.file, check.names=FALSE)
-head(sube0)
+#my.sube0.file<-file.path(find.package("bayesLife"), 'extdata','countye0_annual.txt')
+#sube0<-read.delim(my.sube0.file, check.names=FALSE)
+#head(sube0)
 
 #Directory with national projections
-nat.dir<-file.path(find.package("bayesLife"),"ex-data", "bayesLife.output")
+#nat.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation", "e0_projections")
 
 #Subnational projections for United States
 #including the joint female-male gap model
-subnat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "e0_projections")
-preds<-e0.predict.subnat(840, my.e0.file=my.sube0.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2022, annual=TRUE)
-names(preds)
-get.countries.table(preds[["840"]])
-summary(preds[["840"]], 'Texas')
-e0.trajectories.plot(preds[["840"]], 'Bexar County')
+#subnat.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/e0_projections")
+#preds<-e0.predict.subnat(840, my.e0.file=my.sube0.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2022, annual=TRUE)
+#names(preds)
+#get.countries.table(preds[["840"]])
+#summary(preds[["840"]], 'Bexar County')
 
 #plot subnational and national e0 in oneplot
-nat.pred<-get.e0.prediction(nat.dir)
-e0.trajectories.plot(preds[["840"]],29, pi=95, show.legend=TRUE)
-e0.trajectories.plot(nat.pred,840, pi=95, add=TRUE, col=rep("darkgreen",5), nr.traj=0, show.legend=TRUE, lty=1, bty='n')
+#nat.pred<-get.e0.prediction(nat.dir)
+#e0.trajectories.plot(preds[["840"]],29, pi=95, show.legend=TRUE)
+#e0.trajectories.plot(nat.pred,840, pi=95, add=TRUE, col=rep("darkgreen",5), nr.traj=0, show.legend=TRUE, lty=1, bty='n')
 
 #add male projection to USA
 #using (wrongly) female data only for demonstration
-predUSA<-e0.jmale.predict.subnat(preds[["840"]], my.e0.file=my.sube0.file)
+#predUSA<-e0.jmale.predict.subnat(preds[["840"]], my.e0.file=my.sube0.file)
 
 #retrieve male prediction object
-predUSAMale<-get.rege0.prediction(subnat.dir,840, joint.male=TRUE)
+#predUSAMale<-get.rege0.prediction(subnat.dir,840, joint.male=TRUE)
 
 #the smae works using
-predUSAMale<-get.e0.jmale.prediction(predUSA)
-summary(predUSAMale)
+#predUSAMale<-get.e0.jmale.prediction(predUSA)
+#summary(predUSAMale)
 
 #Retrieve female and male trajectories
-trajsF.Bexar<-get.e0.trajectories(predUSA, "Bexar County")
-summary(trajsF.Bexar)
-trajsF.Bexar.table<-e0.trajectories.table(predUSA, "Bexar County")
+#trajsF.Bexar<-get.e0.trajectories(predUSA, "Bexar County")
+#summary(trajsF.Bexar)
+#trajsF.Bexar.table<-e0.trajectories.table(predUSA, "Bexar County")
 
-trajsM.Bexar<-get.e0.trajectories(predUSAMale, "Bexar County")
-summary(trajsM.Bexar)
-trajsM.Bexar.table<-e0.trajectories.table(predUSAMale, "Bexar County")
+#trajsM.Bexar<-get.e0.trajectories(predUSAMale, "Bexar County")
+#summary(trajsM.Bexar)
+#trajsM.Bexar.table<-e0.trajectories.table(predUSAMale, "Bexar County")
 
-trajsF.Bexar.table
-trajsM.Bexar.table
+#trajsF.Bexar.table
+#trajsM.Bexar.table
 
 #summary of differences
-summary(t(trajsF.Bexar-trajsM.Bexar))
+#summary(t(trajsF.Bexar-trajsM.Bexar))
 
 #cleanup
-unlink(subnat.dir)
+#unlink(subnat.dir)
 
 #migration
 #simulation for TX County
-us.mig.file<-file.path(find.package("bayesMig"), "extdata", "TX_county_mig.txt")
-sim.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "mig_projections")
-m<-run.mig.mcmc(nr.chains=3, iter=100, thin=1, my.mig.file=us.mig.file, annual=TRUE, output.dir=sim.dir, present.year=2022, replace.output=TRUE)
-summary(m)
-summary(m, "Bexar County")
-
-mig.partraces.plot(m)
-mig.partraces.cs.plot("Bexar County", m)
+#us.mig.file<-file.path("Y:/Projections/Research/Bayesian_Model/Overview/TXmig_rates_2010_2022.txt")
+sim.dir.mig<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/mig_projections")
+#run.mig.mcmc(nr.chains=5, iter=50000, thin=10, my.mig.file=us.mig.file, annual=TRUE,output.dir=sim.dir.mig, present.year=2020, replace.output=TRUE)
+#summary(m, "Bexar County")
+#mig.partraces.plot(m)
+#mig.partraces.cs.plot("Bexar County", m)
 
 #prediction
-pred<-mig.predict(sim.dir=sim.dir, burnin=5, end.year=2100)
+#pred<-mig.predict(sim.dir=sim.dir.mig, nr.traj = 50000, burnin = 1000, seed = 1, end.year=2060, replace.output=TRUE)
 
-mig.trajectories.plot(pred, "Bexar County", pi=80, ylim=c(-0.02,0.02))
-mig.trajectories.plot(pred, "Bexar County")
-summary(pred,"Bexar County")
+mig.sub.preds<-get.mig.prediction(sim.dir=sim.dir.mig)
+#mig.trajectories.plot(mig.sub.preds, "Bexar County", pi=80, ylim=c(-0.02,0.02))
+mig.trajectories.plot(mig.sub.preds, 29)
+#mig.trajectories.table(mig.sub.preds, 29)
 
+mig.sub.plots<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/mig_projections/subnat/plots")
+#mig.sub.tables<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/mig_projections/subnat")
+#mig.trajectories.plot.all(mig.sub.preds, output.dir=mig.sub.plots)
+#mig.write.projection.summary(mig.sub.preds, output.dir=mig.sub.tables)
+
+#summary(pred,"Bexar County")
+#summary(pred)
 #View locations included in the simulation
-get.countries.table(pred)
+#get.countries.table(mig.sub.preds)
 
-unlink(sim.dir, recursive=TRUE)
-
-#subnational projections for USA
-data.dir<-file.path(find.package("bayesPop"), "extdata")
-#use national data for tfr and e0
-sim.dir<-tempfile()
-pred<-pop.predict(countries=840,output.dir=sim.dir, nr.traj=3, 
-                  wpp.year=2022, present.year=2020, annual=TRUE, keep.vital.events=TRUE,
-                  replace.output=TRUE)
-pop.trajectories.plot(pred, 840, sum.ober.ages=TRUE)
-unlink(sim.dir, recursive=TRUE)
-#Use antional data for tfr and e0
-data.dir<-file.path(find.package("bayesPop"), "extdata")
-sim.dir<-tempfile()
-pred<-pop.predict.subnat(output.dir=sim.dir,
-       locations=file.path(data.dir, "USAlocations4.txt"),
-       inputs=list(popM=file.path(data.dir,"USApopM6.txt"),
-                   popF=file.path(data.dir,"USApopF6.txt"),
-                   tfr.file="median_"),
-                   verbose=TRUE, 
-                   replace.output=TRUE)
-
-pop.trajectories.plot(pred, 1, sum.over.ages=TRUE)
-#NOW try different annual basis age and mortality and different start year and present year
-
+#unlink(sim.dir, recursive=TRUE)
 
 #Use subnational probabilistic TFR simulation
-my.subtfr.file<-file.path(find.package("bayesTFR"), 'extdata', 'TXcounty_tfr_annual.txt')
-tfr.nat.dir<-file.path(find.package("bayesTFR"), 'ex-data', 'bayesTFR.output')
-tfr.reg.dir<-tempfile()
-tfr.preds<-tfr.predict.subnat(840, my.tfr.file=my.subtfr.file, sim.dir=tfr.nat.dir, output.dir=tfr.reg.dir, start.year=2022, annual=TRUE)
-tfr.trajectories.plot(tfr.preds[["840"]],029, pi=95, half.child.variant=FALSE)
+#my.subtfr.file<-file.path("Y:/Projections/Research/Bayesian_Model/Overview/TXcounty_tfr_annual.txt") 
+#tfr.nat.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/TFRprojections")
+tfr.sub.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/TFRprojections/")
+#tfr.preds<-tfr.predict.subnat(840, my.tfr.file=my.subtfr.file, sim.dir=tfr.nat.dir, output.dir=tfr.sub.dir, start.year=2022, annual=TRUE)
+tfr.preds<-get.regtfr.prediction(tfr.sub.dir)
+tfr.trajectories.plot(tfr.preds[["840"]],29, pi=95, half.child.variant=FALSE)
+#tfr.sub.plots<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/TFRprojections/subnat/plots")
+#tfr.sub.tables<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/TFRprojections/subnat/c840")
+#tfr.trajectories.plot.all(tfr.preds[["840"]], output.dir = tfr.sub.plots, output.type = "png", main = NULL, verbose = FALSE)
+#write.projection.summary(dir=tfr.sub.tables)
+
 #use subnational probabilistic e0
-my.sube0.file<-file.path(find.package("bayesLife"), 'extdata','countye0_annual.txt')
-e0.nat.dir<-file.path(find.package("bayesLife"),"ex-data", "bayesLife.output")
-e0.reg.dir<-tempfile()
-e0.preds<-e0.predict.subnat(840, my.e0.file=my.sube0.file, sim.dir=e0.nat.dir, output.dir=e0.reg.dir, start.year=2022, predict.jmale=TRUE,my.e0M.file=my.sube0.file,annual=TRUE)
+#my.sube0.file<-file.path("Y:/Projections/Research/Bayesian_Model/Overview/countye0_annual.txt") 
+#e0.nat.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/e0_projections")
+e0.sub.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/e0_projections")
+#e0.preds<-e0.predict.subnat(840, my.e0.file=my.sube0.file, sim.dir=e0.nat.dir, output.dir=e0.sub.dir, start.year=2022, predict.jmale=TRUE,my.e0M.file=my.sube0.file,annual=TRUE)
+e0.preds<-get.rege0.prediction(e0.sub.dir, country=NULL, method="ar1", joint.male=FALSE)
 e0.trajectories.plot(e0.preds[["840"]],29, pi=95, show.legend=TRUE)
-head(tfr.preds)
-summary(e0.preds)
+#head(tfr.preds)
+#summary(e0.preds)
+e0.sub.plots<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/e0_projections/subnat/plots")
+#e0.sub.tables<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/e0_projections/subnat/c840")
+#e0.trajectories.plot.all(e0.preds[["840"]], output.dir = e0.sub.plots, output.type = "png", main = NULL, verbose = FALSE)
+#write.projection.summary(dir=e0.sub.tables) 
 
+#create asmig 'migrationM'
+library(data.table)
+asmig<-read.table(file="Y:/Projections/Research/Bayesian_Model/Overview/TXmig_rates_asmr.txt", header=TRUE, sep="\t")
+colnames(asmig)[colnames(asmig) == "X2022"] <- "2022"
+migration.totals2age(asmig, ages=NULL, annual=FALSE, time.periods="2022", schedule=NULL, scale=1, method="auto", 
+                sex="M", id.col="country_code", mig.is.rate=TRUE)
 #Population projections 5*5
-data.dir<-file.path(find.package("bayesPop"), "extdata")
-sim.dir<-tempfile()
-mig.sim.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "mig_projections")
-pred<-pop.predict.subnat(output.dir=sim.dir, default.country=840,
+data.dir<-file.path("Y:/Projections/Research/Bayesian_Model/Overview")
+sim.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/bayesPrediction")
+mig.sim.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/mig_projections")
+pred<-pop.predict.subnat(output.dir=sim.dir, default.country=840,end.year=2060, start.year=2010, present.year=2020,
     locations=file.path(data.dir,"USAlocations.txt"),
     inputs=list(popM=file.path(data.dir, "USApopM.txt"),
             popF=file.path(data.dir,"USApopF.txt"),
-            patterns=file.path(data.dir,"USApatterns.txt"),
-            tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
-            e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
+            #migF=file.path(data.dir,"migF.txt"),
+            #migM=file.path(data.dir,"migM.txt"),
+            #mig=file.path(data.dir,"mig.txt"),
+           #patterns=file.path(data.dir,"USApatterns.txt"),
+            tfr.sim.dir=file.path(tfr.sub.dir, "subnat", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
+            e0F.sim.dir=file.path(e0.sub.dir, "subnat_ar1", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
             e0M.sim.dir="joint_",
-            migtrj=file.path(mig.sim.dir, "predictions", "projection_summary.csv"), #use total migration by county
+            #migtrj=file.path(mig.sim.dir, "predictions", "projection_summary_user_friendly.csv"), #use total migration by county
             GQpopM=file.path(data.dir, "USApopGQM.txt"), #use GQcounts by county for males
             GQpopF=file.path(data.dir, "USApopGQF.txt") #use GQcounts by county for females
             ),
-    verbose=TRUE, replace.output=TRUE)
+    verbose=TRUE) #, replace.output=TRUE
+outdir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/bayesPrediction/plot")
+#outdir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/bayesPrediction/table")
+pred<-get.pop.prediction(sim.dir=sim.dir)
 
-pop.trajectories.plot(pred,1, sum.over.ages=TRUE)
-pop.pyramid(pred,1,year=2050)
-get.countries.table(pred)
+pop.trajectories.plot(pred,29, sum.over.ages=TRUE)
+#pop.trajectories.plotAll(pred,year=2060, sum.over.ages=TRUE, output.dir=outdir)
 
-#Population projections 1*1
-data.dir<-file.path(find.package("bayesPop"), "extdata")
-sim.dir<-tempfile()
-mig.sim.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/apps/R/Population projection/Country", "mig_projections")
-pred<-pop.predict.subnat(output.dir=sim.dir, default.country=840,
-    locations=file.path(data.dir,"USAlocations.txt"),
-    inputs=list(popM=file.path(data.dir, "USApopM.txt"),
-            popF=file.path(data.dir,"USApopF.txt"),
-            patterns=file.path(data.dir,"USApatterns.txt"),
-            tfr.sim.dir=file.path(tfr.reg.dir, "subnat", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f44e204fed
-            e0F.sim.dir=file.path(e0.reg.dir, "subnat_ar1", "c840"), #C:/Users/bkf510/AppData/Local/Temp/Rtmp2FLlIF/file2f457cf2777
-            e0M.sim.dir="joint_",
-            migtrj=file.path(mig.sim.dir, "predictions", "projection_summary.csv"), #use total migration by county
-            GQpopM=file.path(data.dir, "USApopGQM.txt"), #use GQcounts by county for males
-            GQpopF=file.path(data.dir, "USApopGQF.txt") #use GQcounts by county for females
-            ),
-    verbose=TRUE, replace.output=TRUE)
+pop.byage.plot(pred,expression = "G507_{}", nr.traj = 50, year = 2050)
+age<-pop.byage.table(pred, expression = "B29{}", pi=c(80,95),  year = 2030)
+pop.pyramid(pred, 29, year=2060)
+write.pop.projection.summary(pred, what=c(),output.dir = outdir)
+#get.countries.table(pred)
 
-pop.trajectories.plot(pred,1, sum.over.ages=TRUE)
-pop.pyramid(pred,1,year=2050)
-get.countries.table(pred)
+#wirte various measures
+#outdir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/bayesPrediction/output")
+#write.pop.projection.summary(pred, what=c("pop", "popsexage", "popsex"),output.dir=outdir)
+#write.pop.projection.summary(pred, expression="G29_f", output.dir=outdir, include.observed=TRUE, digits=2)
+#unlink(outdir, recursive=TRUE)
 
-#aggregate to countly level
-aggr<-pop.aggregate.subnat(pred, regions=840, locations=file.path(data.dir,"USAlocations4.txt"))
-pop.trajectories.plot(aggr,840, sum.over.ages=TRUE)
+#write migration projections
+mig.sim.dir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/mig_projections")
+county_mig<-get.mig.prediction(sim.dir=mig.sim.dir)
+mig.trajectories.plot(county_mig, 85, pi=95)
+mig.trajectories.plot(county_mig, "Bexar County")
+mig.trajectories.plot.all(county_mig, output.dir=mig.sim.dir )
+mig.write.projection.summary(county_mig, output.dir=mig.sim.dir)
+summary(mig,"Bexar County")
+summary(mig)
+age.specific.migration(county_mig, output.dir=outdir)
+asmig <- age.specific.migration()
+head(asmig$male)
+head(asmig$female)
+outdir<-file.path("Y:/Projections/Research/Bayesian_Model/simulation/bayesPrediction/output")
+write.pop.projection.summary(pred, what=NULL, expression="G29_M" , output.dir=outdir)
+write.pop.trajectories(pred, expression="G29_f{1:19}" , output.file="pop_BEXAR_trj.csv", byage=TRUE)
 
-summary(tfr.preds,"Bexar County")
-summary(e0.preds,"Bexar County")
-summary(pred)
+df<-read.csv("Y:/Projections/Research/Bayesian_Model/simulation/mig_projections/predictions/projection_summary_user_friendly.csv")
+asmig<-migration.totals2age(df, ages.to.zero=TRUE, annual = TRUE, scale = 1, method = "rc", time.periods=NULL, sex = "M",  id.col = "country_code")
+age.specific.migration(county_mig, years = seq(2010, 2100, by = 5), countries = NULL, smooth = TRUE, rescale = TRUE, ages.to.zero = TRUE,
+write.to.disk = FALSE, directory = getwd(), file.prefix = "migration", depratio = wpp.year == 2019, verbose = TRUE)
+head(asmr)
 
-#life table for input
-pred<-pop.predict(countries=840, output.dir=sim.dir, wpp.year=2019, present.year=2020, keep.vital.events=TRUE, fixed.mx=TRUE, fixed.pasfr=TRUE)
-mxm<-pop.byage.table(pred, expression='MUS_M{age.index01(27)}', year=2020)[,2]
-mxf<-pop.byage.table(pred, expression='MUS_F{age.index01(27)}', year=2020)[,1]
-USAlocations <- read.table(file.path(data.dir, "USAlocations.txt"), header = TRUE,sep="\t")
-USApopM <- read.table(file.path(data.dir, "USApopM.txt"), header = TRUE,sep="\t")
-USApopF <- read.table(file.path(data.dir,"USApopF.txt"), header = TRUE,sep="\t")
-USApatterns <- read.table(file.path(data.dir,"USApatterns.txt"), header = TRUE,sep="\t")
-head(USApopM)
-data(vwBaseYear2022)
-head(vwBaseYear2022)
+get.trajectory.indices(pred, 29, what=c("TFR", "migM", ",migF"))
+extract.trajectories.eq(pred, country = 29, expression = "GXXX_F[1:19]",
+quant = 0.5, values = NULL, nr.traj = 1)
+
+
+head(df)
+rcastro.schedule(annual=FALSE)
+
+migAll<-get.pop.ex("GXXX_M[1:20]", pred)
+head(migALL)
+
+write.pop.projection.summary(pred, expression="GXXX[1:19]", file.suffix="amf", output.dir=outdir, include.observed=TRUE, digits=2)
+
+get.trajectory.indices(pred, 29, what=c("migM", "migF"))
+
