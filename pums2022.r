@@ -60,14 +60,14 @@ combined_table <- merge(combined_table, hispanic_foreign_born_table, by = "Multg
 combined_table <- merge(combined_table, black_table, by = "Multgen_Status", all = TRUE)
 combined_table <- merge(combined_table, total_table, by = "Multgen_Status", all = TRUE)
 multigen2022<-combined_table
-View(multigem2022)
-#2011
-pums2011_p<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2011/1-Year/sas/psam_p48.sas7bdat")
-pums2011_h<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2011/1-Year/sas/psam_h48.sas7bdat")
+View(multigen2022)
+#2012
+pums2012_p<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2012/1-Year/sas/psam_p48.sas7bdat")
+pums2012_h<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2012/1-Year/sas/psam_h48.sas7bdat")
 
 #multi-generational family
-h11 <- pums2011_h[, c("WGTP","SERIALNO","MULTG" )]
-p11 <- pums2011_p[, c("PWGTP","SERIALNO", "NATIVITY", "HISP","RAC1P")]
+h11 <- pums2012_h[, c("WGTP","SERIALNO","MULTG" )]
+p11 <- pums2012_p[, c("PWGTP","SERIALNO", "NATIVITY", "HISP","RAC1P")]
 # Merge the two data frames based on SERIALNO
 mh11 <- merge(h11, p11, by = "SERIALNO")
 Total<-mh11
@@ -82,26 +82,26 @@ Hispanic_Foreign_born <- mh11[mh11$HISP != "01" & mh11$NATIVITY == "2", ]
 Black <- mh11[mh11$HISP == "01" & mh11$RAC1P == "2", ]
 # Calculate the sum of PWGTP by mutigenerational status combining with serialno then create hispanic_US_born and hispanic_foreign_born multigenerational status using pwgpt weight
 asian_table <- aggregate(PWGTP ~ Multgen_Status , data = Asian, FUN = sum)
-# Rename the PWGTP variable to Asian2011
-names(asian_table)[names(asian_table) == "PWGTP"] <- "Asian2011"
+# Rename the PWGTP variable to Asian2012
+names(asian_table)[names(asian_table) == "PWGTP"] <- "Asian2012"
 #do the same for NH-White
 nh_white_table <- aggregate(PWGTP ~ Multgen_Status, data = NH_White, FUN = sum)
-names(nh_white_table)[names(nh_white_table) == "PWGTP"] <- "NH-White2011"
+names(nh_white_table)[names(nh_white_table) == "PWGTP"] <- "NH-White2012"
 #do the same for Hispanic
 Hisp_table <- aggregate(PWGTP ~ Multgen_Status, data = Hisp, FUN = sum)
-names(Hisp_table)[names(Hisp_table) == "PWGTP"] <- "Hisp2011"
+names(Hisp_table)[names(Hisp_table) == "PWGTP"] <- "Hisp2012"
 #do the same for us_born_Hispanic
 hispanic_us_born_table <- aggregate(PWGTP ~ Multgen_Status, data = Hispanic_US_born, FUN = sum)
-names(hispanic_us_born_table)[names(hispanic_us_born_table) == "PWGTP"] <- "US_born_Hisp2011"
+names(hispanic_us_born_table)[names(hispanic_us_born_table) == "PWGTP"] <- "US_born_Hisp2012"
 #do the same for foreign_born_Hispanic
 hispanic_foreign_born_table <- aggregate(PWGTP ~ Multgen_Status , data = Hispanic_Foreign_born, FUN = sum)
-names(hispanic_foreign_born_table)[names(hispanic_foreign_born_table) == "PWGTP"] <- "Foreign_born_Hisp2011"
+names(hispanic_foreign_born_table)[names(hispanic_foreign_born_table) == "PWGTP"] <- "Foreign_born_Hisp2012"
 #do the same for Black
 black_table <- aggregate(PWGTP ~ Multgen_Status , data = Black, FUN = sum)
-names(black_table)[names(black_table) == "PWGTP"] <- "Black2011"
+names(black_table)[names(black_table) == "PWGTP"] <- "Black2012"
 #do the same for total
 total_table <- aggregate(PWGTP ~ Multgen_Status , data = mh11, FUN = sum)
-names(total_table)[names(total_table) == "PWGTP"] <- "All2011"
+names(total_table)[names(total_table) == "PWGTP"] <- "All2012"
 #combine
 # Merge Asian and NH-White tables
 combined_table <- merge(asian_table, nh_white_table, by = "Multgen_Status", all = TRUE)
@@ -110,16 +110,16 @@ combined_table <- merge(combined_table, hispanic_us_born_table, by = "Multgen_St
 combined_table <- merge(combined_table, hispanic_foreign_born_table, by = "Multgen_Status", all = TRUE)
 combined_table <- merge(combined_table, black_table, by = "Multgen_Status", all = TRUE)
 combined_table <- merge(combined_table, total_table, by = "Multgen_Status", all = TRUE)
-multigen2011<-combined_table
-View(multigen2011)
+multigen2012<-combined_table
+View(multigen2012)
 
-#2016
-pums2016_p<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2016/1-Year/sas/psam_p48.sas7bdat")
-pums2016_h<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2016/1-Year/sas/psam_h48.sas7bdat")
+#2017
+pums2017_p<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2017/1-Year/sas/psam_p48.sas7bdat")
+pums2017_h<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2017/1-Year/sas/psam_h48.sas7bdat")
 
 #multi-generational family
-h16 <- pums2016_h[, c("WGTP","SERIALNO","MULTG" )]
-p16 <- pums2016_p[, c("PWGTP","SERIALNO", "NATIVITY", "HISP","RAC1P")]
+h16 <- pums2017_h[, c("WGTP","SERIALNO","MULTG" )]
+p16 <- pums2017_p[, c("PWGTP","SERIALNO", "NATIVITY", "HISP","RAC1P")]
 # Merge the two data frames based on SERIALNO
 mh16 <- merge(h16, p16, by = "SERIALNO")
 Total<-mh16
@@ -134,26 +134,26 @@ Hispanic_Foreign_born <- mh16[mh16$HISP != "01" & mh16$NATIVITY == "2", ]
 Black <- mh16[mh16$HISP == "01" & mh16$RAC1P == "2", ]
 # Calculate the sum of PWGTP by mutigenerational status combining with serialno then create hispanic_US_born and hispanic_foreign_born multigenerational status using pwgpt weight
 asian_table <- aggregate(PWGTP ~ Multgen_Status , data = Asian, FUN = sum)
-# Rename the PWGTP variable to Asian2016
-names(asian_table)[names(asian_table) == "PWGTP"] <- "Asian2016"
+# Rename the PWGTP variable to Asian2017
+names(asian_table)[names(asian_table) == "PWGTP"] <- "Asian2017"
 #do the same for NH-White
 nh_white_table <- aggregate(PWGTP ~ Multgen_Status, data = NH_White, FUN = sum)
-names(nh_white_table)[names(nh_white_table) == "PWGTP"] <- "NH-White2016"
+names(nh_white_table)[names(nh_white_table) == "PWGTP"] <- "NH-White2017"
 #do the same for Hispanic
 Hisp_table <- aggregate(PWGTP ~ Multgen_Status, data = Hisp, FUN = sum)
-names(Hisp_table)[names(Hisp_table) == "PWGTP"] <- "Hisp2016"
+names(Hisp_table)[names(Hisp_table) == "PWGTP"] <- "Hisp2017"
 #do the same for us_born_Hispanic
 hispanic_us_born_table <- aggregate(PWGTP ~ Multgen_Status, data = Hispanic_US_born, FUN = sum)
-names(hispanic_us_born_table)[names(hispanic_us_born_table) == "PWGTP"] <- "US_born_Hisp2016"
+names(hispanic_us_born_table)[names(hispanic_us_born_table) == "PWGTP"] <- "US_born_Hisp2017"
 #do the same for foreign_born_Hispanic
 hispanic_foreign_born_table <- aggregate(PWGTP ~ Multgen_Status , data = Hispanic_Foreign_born, FUN = sum)
-names(hispanic_foreign_born_table)[names(hispanic_foreign_born_table) == "PWGTP"] <- "Foreign_born_Hisp2016"
+names(hispanic_foreign_born_table)[names(hispanic_foreign_born_table) == "PWGTP"] <- "Foreign_born_Hisp2017"
 #do the same for Black
 black_table <- aggregate(PWGTP ~ Multgen_Status , data = Black, FUN = sum)
-names(black_table)[names(black_table) == "PWGTP"] <- "Black2016"
+names(black_table)[names(black_table) == "PWGTP"] <- "Black2017"
 #do the same for total
 total_table <- aggregate(PWGTP ~ Multgen_Status , data = mh16, FUN = sum)
-names(total_table)[names(total_table) == "PWGTP"] <- "All2016"
+names(total_table)[names(total_table) == "PWGTP"] <- "All2017"
 #combine
 # Merge Asian and NH-White tables
 combined_table <- merge(asian_table, nh_white_table, by = "Multgen_Status", all = TRUE)
@@ -162,8 +162,8 @@ combined_table <- merge(combined_table, hispanic_us_born_table, by = "Multgen_St
 combined_table <- merge(combined_table, hispanic_foreign_born_table, by = "Multgen_Status", all = TRUE)
 combined_table <- merge(combined_table, black_table, by = "Multgen_Status", all = TRUE)
 combined_table <- merge(combined_table, total_table, by = "Multgen_Status", all = TRUE)
-multigen2016<-combined_table
-View(multigen2016)
+multigen2017<-combined_table
+View(multigen2017)
 
 # Load the openxlsx library if not already loaded
 library(openxlsx)
@@ -172,17 +172,17 @@ library(openxlsx)
 wb <- createWorkbook()
 
 # Add each data frame to a separate sheet
-addWorksheet(wb, sheetName = "Multigen2011")
-writeData(wb, sheet = "Multigen2011", x = multigen2011)
+addWorksheet(wb, sheetName = "Multigen2012")
+writeData(wb, sheet = "Multigen2012", x = multigen2012)
 
-addWorksheet(wb, sheetName = "Multigen2016")
-writeData(wb, sheet = "Multigen2016", x = multigen2016)
+addWorksheet(wb, sheetName = "Multigen2017")
+writeData(wb, sheet = "Multigen2017", x = multigen2017)
 
 addWorksheet(wb, sheetName = "Multigen2022")
 writeData(wb, sheet = "Multigen2022", x = multigen2022)
 
 # Save the workbook to an Excel file
-saveWorkbook(wb, file = "C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/weekly_chart/R/multigen_data.xlsx")
+saveWorkbook(wb, file = "Y:/ProductDev/2024/Social Media Posts/VizOfTheWeek/updates/multigen_data.xlsx")
 
 
 write_xlsx(combined_table, "C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/weekly_chart/R/disability_6group_2011.xlsx")
@@ -830,7 +830,7 @@ table_race <- ch1 %>%
   summarize(Sum_PWGTP = sum(PWGTP)) %>%
   mutate(Race_Category  = race_categories[as.character(RAC1P)])
 
-write_xlsx(table_race, "C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/weekly_chart/R/race_comp_tx.xlsx")
+write_xlsx(table_race, "Y:/ProductDev/2024/Social Media Posts/VizOfTheWeek/updates/race_comp_tx.xlsx")
 
 print(table_race)
 # Filter ch1 by RACBLK
@@ -911,7 +911,7 @@ print(table_african)
 
 
 # Save table_african as an Excel file
-write_xlsx(table_african, "C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/weekly_chart/R/USborn_african.xlsx")
+write_xlsx(table_african, "Y:/ProductDev/2024/Social Media Posts/VizOfTheWeek/updates/USborn_african.xlsx")
 
 # foreign born composition
 # Filter ch1 by RACBLK
@@ -966,7 +966,7 @@ foreignborn_african <- ch13 %>%
   mutate(African_Country = african_country_codes[as.character(POBP)])
 
 print(foreignborn_african)
-write_xlsx(foreignborn_african, "C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/weekly_chart/R/foreignborn_african.xlsx")
+write_xlsx(foreignborn_african, "Y:/ProductDev/2024/Social Media Posts/VizOfTheWeek/updates/foreignborn_african.xlsx")
 
 #Age structure by POBP
 ch2<-  ch1 %>%
@@ -1059,17 +1059,17 @@ library(cowplot)
 plot_grid((ch5_plots$plot[[1]] +  ggtitle("Native") + xlab("AGE") + ylab("Population")), 
           (ch5_plots$plot[[4]] +  ggtitle("Asia")  +xlab("AGE") + ylab("Population")), ncol = 2)
 
-#read 2010 pums data
-pums2010_1y<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2010/1-Year/sas/psam_p48.sas7bdat")
+#read 2012 pums data
+pums2012_1y<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2012/1-Year/sas/psam_p48.sas7bdat")
 #
-ch6_2010<-pums2010_1y[, c("AGEP", "PWGTP", "NATIVITY", "POBP", "WAOB", "YOEP")]
+ch6_2012<-pums2012_1y[, c("AGEP", "PWGTP", "NATIVITY", "POBP", "WAOB", "YOEP")]
 ch6_2022<-pums2022_1y[, c("AGEP", "PWGTP", "NATIVITY", "POBP", "WAOB", "YOEP")]
 
 
-ch6_2010n<- ch6_2010 %>%
+ch6_2012n<- ch6_2012 %>%
   nest_by(WAOB)
 
-ch6_2010_plots <- ch6_2010n %>% 
+ch6_2012_plots <- ch6_2012n %>% 
   drop_na() %>% 
   mutate(plot = map2(
     data, WAOB,  
@@ -1082,8 +1082,8 @@ ch6_2010_plots <- ch6_2010n %>%
   ))
 
 plot_grid(
-  (ch6_2010_plots$plot[[4]] + ggtitle("Year of entry born in Asia") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
-  (ch6_2010_plots$plot[[8]] + ggtitle("Year of entry born in Pacific Islands") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
+  (ch6_2012_plots$plot[[4]] + ggtitle("Year of entry born in Asia") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
+  (ch6_2012_plots$plot[[8]] + ggtitle("Year of entry born in Pacific Islands") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
   align = "v", axis = "tb", nrow = 2
 )
 
@@ -1106,15 +1106,15 @@ plot_grid(
   align = "v", axis = "tb", nrow = 2
 )
 
-#pums 2010 vs 2022 for asian born
+#pums 2012 vs 2022 for asian born
 plot_grid(
-  (ch6_2010_plots$plot[[4]] + ggtitle("Year of entry born in Asia in 2010") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
+  (ch6_2012_plots$plot[[4]] + ggtitle("Year of entry born in Asia in 2012") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
   (ch6_2022_plots$plot[[4]] + ggtitle("Year of entry born in Asia in 2022") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
   align = "v", axis = "tb", nrow = 2
 )
-#pums 2010 vs 2022 for born in pacific islanders
+#pums 2012 vs 2022 for born in pacific islanders
 plot_grid(
-  (ch6_2010_plots$plot[[8]] + ggtitle("Year of entry born in Pacific Islands in 2010") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
+  (ch6_2012_plots$plot[[8]] + ggtitle("Year of entry born in Pacific Islands in 2012") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
   (ch6_2022_plots$plot[[8]] + ggtitle("Year of entry born in Pacific Islands in 2022") + xlab("Year of entry") + ylab("Population")) + ylim(0, NA), 
   align = "v", axis = "tb", nrow = 2
 )
@@ -1128,8 +1128,7 @@ pums2022_5y<-read_sas("Y:/Data/Census/programs-surveys/acs/data/pums/2022/5-Year
 
 ch7<-pums2022_5y[, c("SCHL","PWGTP", "NATIVITY", "WAOB","ADJINC")]
 ch7$SCHL<-as.numeric(ch7$SCHL)
-ch7 <- ch7 %>% 
-  mutate(edu = recode(SCHL, recodes="21:24 = 'Bachelor or higher'; else = 'HighSchool or lower'"))
+ch7$edu <- Recode(ch7$SCHL, recodes="21:24 = 'Bachelor or higher'; else = 'HighSchool or lower'")
 table(ch7$edu)
 
 
@@ -1164,7 +1163,7 @@ ch7_prop_plots <- ch7_nest %>%
 
 
   plot_grid(
-    (ch7_prop_plots$plot[[4]] + ggtitle("Asian educational attainment") + xlab("Aian") + ylab("Proportion")) + ylim(0, NA), 
+    (ch7_prop_plots$plot[[4]] + ggtitle("Asian educational attainment") + xlab("Asian") + ylab("Proportion")) + ylim(0, NA), 
     (ch7_prop_plots$plot[[8]] + ggtitle("Pacific Islander educational attainment") + xlab("Pacific Islander") + ylab("Proportion")) + ylim(0, NA), 
     align = "v", axis = "tb", nrow = 2
   )
@@ -1236,8 +1235,8 @@ ch7_prop_plots <- ch7_nest %>%
 ch7 <- pums2022_5y[, c("SCHL", "PWGTP", "NATIVITY", "WAOB","POBP","ADJINC")]
 ch7$SCHL <- as.numeric(ch7$SCHL)
 
-ch7 <- ch7 %>%
-  mutate(edu = recode(SCHL, recodes = "21:24 = 'Bachelor or higher'; else = 'HighSchool or lower'"))
+ch7$edu <- Recode(ch7$SCHL, recodes="21:24 = 'Bachelor or higher'; else = 'HighSchool or lower'")
+
 
 ch7_prop <- ch7 %>%
   group_by(WAOB) %>%
@@ -1295,10 +1294,18 @@ library(purrr)
 
 # Subset the data frame
 ch7 <- pums2022_5y[, c("SCHL", "PWGTP", "NATIVITY", "WAOB", "POBP", "ADJINC", "RAC1P", "PERNP", "AGEP", "PINCP","FESRP", "RAC1P", "FHISP")]
+# Check for duplicate column names
+duplicates <- duplicated(names(ch7))
+
+if (any(duplicates)) {
+  names(ch7) <- make.unique(names(ch7), sep = "_")
+}
+
 ch7$SCHL <- as.numeric(ch7$SCHL)
 ch7$factor <- as.numeric(ch7$ADJINC)/1000000
 ch7$adj_ern <- ch7$factor*ch7$PERNP
 ch7$adj_inc <- ch7$factor*ch7$PINCP
+
 ch7 <- ch7 %>%
   subset(AGEP >= 16)
 # Recode the education level
