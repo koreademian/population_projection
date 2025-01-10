@@ -23,7 +23,7 @@ library(bayesLife)
 library(bayesMig)
 library(bayesPop)
 library(lubridate)
-library(wpp2022)
+library(wpp2019)
 #library(wpp2019)
 #library(MortCast)
 
@@ -39,9 +39,9 @@ getwd()
 #Overall Flow
 #TFR run by mcmc for simulating the total fertility rates of all countries of world (phaseIII)
 sim.dir.tfr <- file.path(getwd(), "TFRprojections")
-run.tfr.mcmc(iter = 10000, nr.chains = 5, thin = 10, output.dir = sim.dir.tfr, wpp.year=2022, start.year=1980,  seed = 1, replace.output=TRUE)
-run.tfr3.mcmc(sim.dir = sim.dir.tfr, iter = 50000, nr.chains = 5, thin = 10, seed = 1, wpp.year=2022, replace.output=TRUE)
-tfr.predict(sim.dir = sim.dir.tfr, nr.traj = NULL, thin=NULL, burnin3 = 1000, seed = 1, replace.output=TRUE)
+run.tfr.mcmc(iter = 1000, nr.chains = 5, thin = 10, output.dir = sim.dir.tfr, wpp.year=2019, start.year=1980,  seed = 1, replace.output=TRUE)
+run.tfr3.mcmc(sim.dir = sim.dir.tfr, iter = 1000, nr.chains = 5, thin = 10, seed = 1, wpp.year=2019, replace.output=TRUE)
+tfr.predict(sim.dir = sim.dir.tfr, nr.traj = NULL, thin=NULL, burnin3 = 100, seed = 1, replace.output=TRUE)
 tfr.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/TFRprojections")
 pred<-get.tfr.prediction(sim.dir=tfr.dir)
 summary(pred, 410)
@@ -49,8 +49,8 @@ tfr.trajectories.plot(pred, 410)
 #life expectancy
 #storing e0_prediction trajectories of each nation
 sim.dir.e0 <- file.path(getwd(), "e0_projections")
-run.e0.mcmc(sex = c("Female", "Male"), iter = 50000, nr.chains = 5, thin = 10, wpp.year=2022, output.dir = sim.dir.e0, seed = 1, replace.output=TRUE)
-e0.predict(sim.dir=sim.dir.e0, nr.traj = NULL, burnin = 1000, seed = 1)
+run.e0.mcmc(sex = c("Female", "Male"), iter = 1000, nr.chains = 5, thin = 10, wpp.year=2019, output.dir = sim.dir.e0, seed = 1, replace.output=TRUE)
+e0.predict(sim.dir=sim.dir.e0, nr.traj = NULL, burnin = 100, seed = 1)
 e0.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/e0_projections")
 pred<-get.e0.prediction(sim.dir=e0.dir)
 summary(pred,410)
@@ -58,8 +58,8 @@ e0.trajectories.plot(pred,410)
 #migration
 #storing mig_prediction trajectories of each nation
 sim.dir.mig <- file.path(getwd(), "mig_projections")
-run.mig.mcmc(nr.chains = 5, iter = 50000, thin = 10, output.dir = sim.dir.mig, replace.output=TRUE)
-mig.predict(sim.dir=sim.dir.mig, nr.traj = NULL, burnin = 1000, seed = 1)
+run.mig.mcmc(nr.chains = 5, iter = 1000, thin = 10, output.dir = sim.dir.mig, replace.output=TRUE)
+mig.predict(sim.dir=sim.dir.mig, nr.traj = NULL, burnin = 100, seed = 1)
 mig.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/mig_projections")
 pred<-get.mig.prediction(sim.dir=mig.dir)
 summary(pred,410)
@@ -67,10 +67,10 @@ mig.trajectories.plot(pred,410)
 # Generate probabilistic population projections
 sim.dir.pop <- file.path(getwd(), "pop_projections")
 pop.pred <- pop.predict(output.dir = sim.dir.pop, inputs = list(tfr.sim.dir = sim.dir.tfr, e0F.sim.dir = sim.dir.e0, e0M.sim.dir = "joint_", mig.sim.dir=sim.dir.mig),
-     wpp.year=2022, start.year=1980, replace.output=TRUE, keep.vital.events = TRUE, verbose = TRUE)
+     wpp.year=2019, start.year=1980, replace.output=TRUE, keep.vital.events = TRUE, verbose = TRUE)
 pop.pred <- get.pop.prediction(sim.dir=sim.dir.pop)
 str(pop.pred)
-summary(pop.pred, 410)
+summary(pop.pred)
 pop.trajectories.plot(pop.pred,410)
 
 
@@ -90,7 +90,7 @@ nat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antoni
 
 #Subnational projections for Korea
 subnat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/TFRprojections")
-preds<-tfr.predict.subnat(410, my.tfr.file=my.subtfr.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2023, annual=TRUE)
+preds<-tfr.predict.subnat(410, my.tfr.file=my.subtfr.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2020, annual=TRUE) #annual=TRUE
 names(preds)
 get.countries.table(preds[["410"]])
 summary(preds[["410"]], 'Seoul')
@@ -119,16 +119,11 @@ nat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antoni
 
 #Subnational projections for United States
 #including the joint female-male gap model
-subnat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/e0_projections/subnat_ar1/c410")
-preds<-e0.predict.subnat(410, my.e0.file=my.sube0.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2023, annual=TRUE)
+subnat.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/e0_projections")
+preds<-e0.predict.subnat(410, my.e0.file=my.sube0.file, sim.dir=nat.dir, output.dir=subnat.dir, start.year=2020, annual=TRUE)
 names(preds)
 get.countries.table(preds[["410"]])
 summary(preds[["410"]], 'Seoul')
-
-#plot subnational and national e0 in oneplot
-#nat.pred<-get.e0.prediction(nat.dir)
-#e0.trajectories.plot(preds[["840"]],29, pi=95, show.legend=TRUE)
-#e0.trajectories.plot(nat.pred,840, pi=95, add=TRUE, col=rep("darkgreen",5), nr.traj=0, show.legend=TRUE, lty=1, bty='n')
 
 #add male projection to Korea
 #using (wrongly) female data only for demonstration
@@ -141,6 +136,12 @@ predKoreaMale<-get.rege0.prediction(subnat.dir,410, joint.male=TRUE)
 predKoreaMale<-get.e0.jmale.prediction(predKorea)
 summary(predKoreaMale)
 
+#plot subnational and national e0 in oneplot
+nat.pred<-get.e0.prediction(nat.dir)
+#e0.trajectories.plot(preds[["840"]],29, pi=95, show.legend=TRUE)
+#e0.trajectories.plot(nat.pred,840, pi=95, add=TRUE, col=rep("darkgreen",5), nr.traj=0, show.legend=TRUE, lty=1, bty='n')
+e0.trajectories.plot.all(preds[["410"]], output.dir = file.path(subnat.dir, 'subnat_plot'), output.type = "png", main = NULL, verbose = FALSE)
+e0.trajectories.table(preds[["410"]],11)
 #Retrieve female and male trajectories
 trajsF.Seoul<-get.e0.trajectories(predKorea, "Seoul")
 summary(trajsF.Seoul)
@@ -163,19 +164,20 @@ unlink(subnat.dir)
 #simulation for Korea areas
 Korea.mig.file<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/subnational/migrates_subnational_Korea.txt")
 sim.dir.mig<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/mig_projections/subnat")
-# run.mig.mcmc(nr.chains=5, iter=50000, thin=10, my.mig.file=Korea.mig.file, annual=TRUE,output.dir=sim.dir.mig, present.year=2023, replace.output=TRUE)
+#run.mig.mcmc(nr.chains=5, iter=1000, thin=10, my.mig.file=Korea.mig.file, annual=TRUE,output.dir=sim.dir.mig, present.year=2020, replace.output=TRUE)
 #summary(m, "Seoul")
 #mig.partraces.plot(m)
 #mig.partraces.cs.plot("Seoul", m)
 
 #prediction
-# pred<-mig.predict(sim.dir=sim.dir.mig, nr.traj = 50000, burnin = 1000, seed = 1, end.year=2100, replace.output=TRUE)
+#pred<-mig.predict(sim.dir=sim.dir.mig, nr.traj = 1000, burnin = 100, seed = 1, end.year=2100, replace.output=TRUE)
 
 mig.sub.preds<-get.mig.prediction(sim.dir=sim.dir.mig)
-mig.trajectories.plot(mig.sub.preds, 'Seoul')
+
 mig.sub.plots<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/mig_projections/subnat/plots")
 mig.sub.tables<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/mig_projections/subnat/tables")
-cmig.write.projection.summary(mig.sub.preds, output.dir=mig.sub.tables)
+mig.write.projection.summary(mig.sub.preds, output.dir=mig.sub.tables)
+mig.trajectories.plot.all(mig.sub.preds, output.dir = mig.sub.plots, output.type = "png", verbose = FALSE)
 
 summary(mig.sub.preds,"Seoul")
 #summary(pred)
@@ -222,11 +224,11 @@ sim.dir.pop<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San An
 tfr.sub.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/TFRprojections/subnat")
 e0.sub.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/e0_projections/subnat_ar1")
 mig.sim.dir<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/mig_projections/subnat")
-pred<-pop.predict.subnat(output.dir=sim.dir.pop, default.country=410,end.year=2100, start.year=1997, present.year=2023,
+pred<-pop.predict.subnat(output.dir=sim.dir.pop, default.country=410,end.year=2100, start.year=1980, present.year=2020, 
     locations=file.path(data.dir,"KRlocations.txt"),
     inputs=list(popM=file.path(data.dir, "KRpopM.txt"),
             popF=file.path(data.dir,"KRpopF.txt"),
-            patterns=file.path(data.dir,"KRpatterns.txt"),
+            #patterns=file.path(data.dir,"KRpatterns.txt"),
             tfr.sim.dir=file.path(tfr.sub.dir, "c410"),
             e0F.sim.dir=file.path(e0.sub.dir, "c410"),
             e0M.sim.dir="joint_"
@@ -234,23 +236,21 @@ pred<-pop.predict.subnat(output.dir=sim.dir.pop, default.country=410,end.year=21
     verbose=TRUE, replace.output=TRUE)
 out.plot.dir<-file.path(sim.dir.pop, "plot")
 out.table.dir<-file.path(sim.dir.pop, "table")
-out.pop<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/simulation/subkorea")
+sub.pop<-file.path("C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/simulation/subkorea")
 
 
 head(pred)
-summary(pred)
 str(pred)
 class(pred)
-get.pop.prediction(pred)
-pop.trajectories.table(pred,country="Seoul")
-pop.trajectories.plotAll(pred, country="Seoul", year=2100, sum.over.ages=TRUE, output.dir=out.plot.dir)
-pop.trajectories.plot(pred, 23)
+sub_pred<-get.pop.prediction(sim.dir.pop)
+summary(pred)
 
-get.countries.table(pred)
-get.trajectories.table(pred,11)
+write.pop.projection.summary(pred, what=c(),output.dir = out.table.dir)
+pop.pyramid(pred, 11, year=2060)
+pop.pyramid(pred, 11, year=2100)
 
 # Save the data frame to a CSV file
-write.csv(summary_df, file = "path/to/your/folder/summary_pop_pred.csv", row.names = FALSE)
+write.csv(pred, file = "C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/simulation/subkorea/summary_SKsub_pred.csv", row.names = FALSE)
 
 
 write.csv(summary_df, file = "C:/Users/bkf510/OneDrive - University of Texas at San Antonio/Desktop/Bayesian_backup/simulation/bayesprediction/table/incheon.csv", row.names = FALSE)
@@ -259,12 +259,12 @@ write.csv(summary_df, file = "C:/Users/bkf510/OneDrive - University of Texas at 
 pop.byage.plot(pred,expression = "P11_{}", nr.traj = 50, year = 2100)
 age<-pop.byage.table(pred, expression = "B29{}", pi=c(80,95),  year = 2030)
 pop.pyramid(pred, 11, year=2060)
-write.pop.projection.summary(pred, what=c(),output.dir = outdir)
+
 #get.countries.table(pred)
 
 sim.dir.pop <- file.path(getwd(), "pop_projections")
 pop.pred <- pop.predict(output.dir = sim.dir.pop, inputs = list(tfr.sim.dir = sim.dir.tfr, e0F.sim.dir = sim.dir.e0, e0M.sim.dir = "joint_", mig.sim.dir=sim.dir.mig),
-     wpp.year=2022, start.year=1980, replace.output=TRUE, keep.vital.events = TRUE, verbose = TRUE)
+     wpp.year=2019, start.year=1980, replace.output=TRUE, keep.vital.events = TRUE, verbose = TRUE)
 pop.pred <- get.pop.prediction(sim.dir=sim.dir.pop)
 str(pop.pred)
 summary(pop.pred, 410)
